@@ -1,0 +1,79 @@
+name: contracts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "contracts/**"
+      - ".github/workflows/contracts.yml"
+  pull_request:
+    paths:
+      - "contracts/**"
+      - ".github/workflows/contracts.yml"
+
+# A second push to the same PR cancels the first run. Contract builds are the
+# slow job in this repository and a queue of superseded runs helps nobody.
+concurrency:
+  group: contracts-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: fmt, clippy, test, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The toolchain, channel and wasm target come from
+      # contracts/rust-toolchain.toml. Do not pin a version here as well —
+      # two sources of truth for the toolchain drift apart, and the failure
+      # shows up as a confusing CI-only error.
+      - name: Install Rust toolchain
+        run: |
+          rustup show active-toolchain
+          rustup component add rustfmt clippy
+          rustup target add wasm32v1-none
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts
+
+      - name: Formatting
+        run: cargo fmt --all -- --check
+
+      # `-D warnings` is why clippy can pass locally and fail here. Run
+      # `task contracts:lint` before pushing and you will see what CI sees.
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Tests
+        run: cargo test --all
+
+      - name: Install Stellar CLI
+        uses: stellar/stellar-cli@main
+
+      # Builds with release profile settings from contracts/Cargo.toml,
+      # including `overflow-checks = true`. If this step starts failing after
+      # a profile change, check that first.
+      - name: Build wasm
+        run: stellar contract build
+
+      - name: Check all four contracts were emitted
+        run: |
+          set -euo pipefail
+          for c in escrow_vault circle_factory bid_auction reputation_registry; do
+            f="target/wasm32v1-none/release/${c}.wasm"
+            test -f "$f" || { echo "missing $f"; exit 1; }
+            echo "$(du -h "$f" | cut -f1)  $f"
+          done
+
+      - name: Upload wasm artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: contracts-wasm
+          path: contracts/target/wasm32v1-none/release/*.wasm
+          if-no-files-found: error

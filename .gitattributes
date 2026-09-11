@@ -1,0 +1,10 @@
+# Normalise line endings. Shell scripts must be LF even when checked out on
+# Windows, or bash fails with an unreadable "\r: command not found".
+* text=auto eol=lf
+
+*.sh          text eol=lf
+Taskfile.yml  text eol=lf
+
+*.png  binary
+*.jpg  binary
+*.wasm binary

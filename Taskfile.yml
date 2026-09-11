@@ -1,0 +1,95 @@
+# Task runner for AJO Onchain. https://taskfile.dev
+#
+# Why a Taskfile rather than package.json scripts: this repository is half
+# Rust and half TypeScript, and `task contracts:test` is friendlier to a
+# first-time contributor than remembering which half needs `cargo` and which
+# needs a workspace filter. Run `task` with no arguments to see everything.
+
+version: "3"
+
+vars:
+  CONTRACTS_DIR: contracts
+
+tasks:
+  default:
+    desc: List available tasks.
+    cmds:
+      - task --list
+    silent: true
+
+  # --- Contracts -------------------------------------------------------------
+
+  contracts:build:
+    desc: Build all contracts to wasm (wasm32v1-none).
+    dir: "{{.CONTRACTS_DIR}}"
+    cmds:
+      - stellar contract build
+
+  contracts:test:
+    desc: Run the contract test suite.
+    dir: "{{.CONTRACTS_DIR}}"
+    cmds:
+      - cargo test --all
+
+  contracts:fmt:
+    desc: Format Rust sources in place.
+    dir: "{{.CONTRACTS_DIR}}"
+    cmds:
+      - cargo fmt --all
+
+  contracts:fmt:check:
+    desc: Check Rust formatting without changing anything.
+    dir: "{{.CONTRACTS_DIR}}"
+    cmds:
+      - cargo fmt --all -- --check
+
+  contracts:lint:
+    desc: Clippy, with warnings treated as errors (same as CI).
+    dir: "{{.CONTRACTS_DIR}}"
+    cmds:
+      - cargo clippy --all-targets -- -D warnings
+
+  contracts:deploy:testnet:
+    desc: Build, deploy and initialise the factory on testnet.
+    cmds:
+      - bash scripts/deploy-testnet.sh
+
+  bindings:
+    desc: Generate TypeScript bindings from the built contracts.
+    cmds:
+      - bash scripts/gen-bindings.sh
+
+  # --- Applications ----------------------------------------------------------
+
+  web:dev:
+    desc: Run the web app. See apps/web/README.md — not scaffolded yet.
+    dir: apps/web
+    cmds:
+      - bun run dev
+
+  indexer:dev:
+    desc: Run the indexer with reload on change.
+    dir: apps/indexer
+    cmds:
+      - bun run dev
+
+  # --- Repository-wide -------------------------------------------------------
+
+  install:
+    desc: Install JavaScript dependencies.
+    cmds:
+      - bun install
+
+  lint:
+    desc: Lint and format-check TypeScript and JSON.
+    cmds:
+      - bun run lint
+
+  check:
+    desc: Everything CI runs. Green here should mean green there.
+    cmds:
+      - task: contracts:fmt:check
+      - task: contracts:lint
+      - task: contracts:test
+      - task: contracts:build
+      - task: lint

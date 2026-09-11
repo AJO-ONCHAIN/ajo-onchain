@@ -1,0 +1,26 @@
+[workspace]
+resolver = "2"
+members = ["shared", "circle-factory", "escrow-vault", "bid-auction", "reputation-registry"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/<ORG>/ajo-onchain"
+
+[workspace.dependencies]
+soroban-sdk = "27"
+ajo-shared = { path = "shared" }
+
+[profile.release]
+# `overflow-checks = true` in release is deliberate and must not be removed.
+# Silent wraparound on `i128` pot arithmetic is a fund-loss bug, and the extra
+# instructions cost far less than the class of bug they prevent.
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true

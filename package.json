@@ -1,0 +1,25 @@
+{
+  "name": "ajo-onchain",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Rotating savings circles (Ajo / Esusu / Adashe) on Soroban.",
+  "license": "MIT",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.13",
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "husky": "^9.1.7"
+  },
+  "engines": {
+    "bun": ">=1.2.0"
+  }
+}

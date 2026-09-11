@@ -1,0 +1,8 @@
+# `wasm32v1-none` is the only wasm target the Soroban runtime accepts. Older
+# guides say `wasm32-unknown-unknown`; that is out of date. The target requires
+# Rust 1.84+, and it must be reinstalled whenever the toolchain is updated.
+[toolchain]
+channel = "stable"
+targets = ["wasm32v1-none"]
+components = ["rustfmt", "clippy"]
+profile = "minimal"

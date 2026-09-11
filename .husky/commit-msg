@@ -1,0 +1,10 @@
+# Check the commit message against Conventional Commits.
+#
+# Calls the local binary directly rather than through bunx/npx: husky puts
+# node_modules/.bin on PATH, and depending on a launcher being installed is
+# how this hook breaks on someone else's machine.
+if [ -x node_modules/.bin/commitlint ]; then
+  node_modules/.bin/commitlint --edit "$1"
+else
+  echo "husky: commitlint not found — run 'bun install'. Skipping message check."
+fi

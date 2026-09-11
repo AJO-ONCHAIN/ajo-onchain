@@ -128,6 +128,27 @@ It is internal planning material — it discusses grant strategy and the
 community vote — and this repository is public-facing. Remove the entry from
 `.gitignore` if you want it committed.
 
+## 12. `scripts/create-issues.sh`
+
+**Brief:** §3 lists two files in `scripts/` — `deploy-testnet.sh` and
+`gen-bindings.sh`. §9 asks for `docs/ISSUES.md` "ready to bulk-create" but
+does not say how.
+
+**Built:** a third script that opens all 23 issues from `docs/ISSUES.md`
+through `gh`, in order, with labels.
+
+The numbers in `docs/ISSUES.md` are load-bearing: they are written into the
+source as `TODO(#n)` markers, and GitHub assigns issue numbers from a counter
+that pull requests also consume. Creating the issues by hand, or in the wrong
+order, or after opening a single pull request, silently points every marker at
+the wrong issue. The script checks the tracker is empty before it starts and
+verifies each returned number against the expected one, stopping on the first
+mismatch rather than producing 22 wrong links.
+
+Run `scripts/create-issues.sh --dry-run` first; a dry run needs neither `gh`
+nor a remote, so the parsed titles and labels can be checked while the
+repository is still local.
+
 ---
 
 ## Not deviations, but worth recording

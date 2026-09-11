@@ -11,7 +11,7 @@ amount of Rust does. Say so in an issue — that is a contribution.
 ## Setup in five minutes
 
 ```bash
-git clone https://github.com/<ORG>/ajo-onchain
+git clone https://github.com/ajo-onchain/ajo-onchain
 cd ajo-onchain
 
 cp .env.example .env      # placeholders are fine for tests

@@ -6,7 +6,7 @@ members = ["shared", "circle-factory", "escrow-vault", "bid-auction", "reputatio
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
-repository = "https://github.com/<ORG>/ajo-onchain"
+repository = "https://github.com/ajo-onchain/ajo-onchain"
 
 [workspace.dependencies]
 soroban-sdk = "27"

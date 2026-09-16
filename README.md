@@ -3,7 +3,6 @@
 **Rotating savings circles, with a market for early access to the pot.**
 
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](./CONTRIBUTING.md)
-[![Good first issues](https://img.shields.io/badge/good%20first%20issues-9-orange.svg)](./docs/ISSUES.md)
 
 ---
 
